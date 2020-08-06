@@ -513,11 +513,11 @@ Redis不保证原子性：
 
 1. 命令性错误（类似于java编译性错误），则执行EXEC命令时，所有命令都不会
 执行
- ![命令性错误](http://qcorkht4q.bkt.clouddn.com/blog1595246376903.png)
+ ![命令性错误](https://raw.githubusercontent.com/koshunho/koshunhopic/master/blog1595246376903.png)
  
 2. 语法性错误（类似于java的1/0的运行时异常），则执行EXEC命令时，其他正确命令会被执行，错误命令抛出异常。
  
- ![语法性错误](http://qcorkht4q.bkt.clouddn.com/blog1595246440326.png)
+ ![语法性错误](https://raw.githubusercontent.com/koshunho/koshunhopic/master/blog1595246440326.png)
  
  ##### Watch监控
  
@@ -624,7 +624,7 @@ dir ./ # dir 数据目录，数据库的写入会在这个目录。rdb、aof文�
 
 若要修改完毕需要立马生效，可以**手动使用 save 命令**！立马生效！
 
-![save](http://qcorkht4q.bkt.clouddn.com/blog1595262546186.png)
+![save](https://raw.githubusercontent.com/koshunho/koshunhopic/master/blog1595262546186.png)
 
 save和bgsave的区别：
 - save 时**只管保存，其他不管，全部阻塞**！
@@ -787,7 +787,7 @@ AOF可能潜在的Bug，留着作为一个万一的手段。
 
 主节点负责写，从节点负责读（也只能读！）
 
-![主从复制](http://qcorkht4q.bkt.clouddn.com/blog1595328742951.png)
+![主从复制](https://raw.githubusercontent.com/koshunho/koshunhopic/master/blog1595328742951.png)
 
 作用：
 1. 数据冗余：主从复制实现了数据的热备份，是持久化之外的一种数据冗余方式。
@@ -837,7 +837,7 @@ Info replication # 查看信息
 
 在主机设置值，在从机都可以取到！从机不能写值！
 
-![一主二从](http://qcorkht4q.bkt.clouddn.com/blog1595330375998.png)
+![一主二从](https://raw.githubusercontent.com/koshunho/koshunhopic/master/blog1595330375998.png)
 
 ##### 配置原理
 Slave 启动成功连接到 master 后会发送一个sync命令
@@ -923,24 +923,24 @@ sentinel failover-timeout mymaster 15000
 
 #### 缓存穿透
 
-简单来说就是 ==查不到==
+简单来说就是 **查不到**
 
 缓存穿透的概念很简单，用户想要查询一个数据，发现redis内存数据库没有，也就是缓存没有命中，于是向持久层数据库查询，发现也没有，于是本次查询失败。当用户很多的时候，缓存都没有命中，于是都去请求了持久层数据库。这会给持久层数据库造成很大的压力，这时候就相当于出现了缓存穿透。
 
 解决方案：
 1. 布隆过滤器
- ![布隆过滤器](http://qcorkht4q.bkt.clouddn.com/blog1595343255687.png)
+ ![布隆过滤器](https://raw.githubusercontent.com/koshunho/koshunhopic/master/blog1595343255687.png)
  
  布隆过滤器可以告诉你**某样东西一定不存在或者可能存在**。
  
  布隆过滤器（Bloom Filter）本质上是由长度为 m 的位向量或位列表（仅包含 0 或 1 位值的列表）组成，最初所有的值均设置为 0，如下图所示。
- ![](http://qcorkht4q.bkt.clouddn.com/blog1595343720860.png)
+ ![](https://raw.githubusercontent.com/koshunho/koshunhopic/master/blog1595343720860.png)
  
  为了将数据项添加到布隆过滤器中，我们会**提供 K 个不同**的==哈希函数==，并将结果位置上对应位的值置为 “1”。
- ![](http://qcorkht4q.bkt.clouddn.com/blog1595343757193.png)
+ ![](https://raw.githubusercontent.com/koshunho/koshunhopic/master/blog1595343757193.png)
  
  2. 缓存空对象
- ![空对象](http://qcorkht4q.bkt.clouddn.com/blog1595343284187.png)
+ ![空对象](https://raw.githubusercontent.com/koshunho/koshunhopic/master/blog1595343284187.png)
  
 但是这种方法会存在两个问题：
 1、如果空值能够被缓存起来，这就意味着缓存需要更多的空间存储更多的键，因为这当中可能会有很多的空值的键；
@@ -997,7 +997,7 @@ bloomFilterInit.getIntegerBloomFilter().put(employee.getId());
 ```
 #### 缓存击穿
 
-查太多！
+**查太多**！
 
 缓存击穿，是指一个key非常热点，在不停的扛着大并发，大并发集中对这一个点进行访问，当这个key在失效的瞬间，持续的大并发就穿破缓存，直接请求数据库，就像在一个屏障上凿开了一个洞。
 
@@ -1033,14 +1033,25 @@ del（key）
 
 产生雪崩的原因之一，比如马上就要到双十二零点，很快就会迎来一波抢购，这波商品时间比较集中的放入了缓存，假设缓存一个小时。那么到了凌晨一点钟的时候，这批商品的缓存就都过期了。而对这批商品的访问查询，都落到了数据库上，对于数据库而言，就会产生周期性的压力波峰。于是所有的请求都会达到存储层，存储层的调用量会暴增，造成存储层也会挂掉的情况。
 
-![缓存血崩](http://qcorkht4q.bkt.clouddn.com/blog1595349116749.png)
+![缓存血崩](https://raw.githubusercontent.com/koshunho/koshunhopic/master/blog1595349116749.png)
 
 其实集中过期，倒不是非常致命，比较致命的缓存雪崩，是缓存服务器某个节点宕机或断网。因为自然形成的缓存雪崩，一定是在某个时间段集中创建缓存，这个时候，数据库也是可以顶住压力的。无非就是对数据库产生周期性的压力而已。而==缓存服务节点的宕机==，对数据库服务器造成的压力是不可预知的，很有可能瞬间就把数据库压垮。
 
 解决方法：
 1. Redis高可用
 这个思想的含义是，既然redis有可能挂掉，那我多增设几台redis，这样一台挂掉之后其他的还可以继续工作，其实就是搭建的**集群**。
-`集群``集群``集群``集群``集群``集群``集群``集群``集群``集群``集群``集群`
+`集群`
+`集群`
+`集群`
+`集群`
+`集群`
+`集群`
+`集群`
+`集群`
+`集群`
+`集群`
+`集群`
+`集群`
 
 2. 限流降级
 这个解决方案的思想是，在缓存失效后，通过加锁或者队列来控制读数据库写缓存的线程数量。比如对某个key只允许一个线程查询数据和写缓存，其他线程等待。
